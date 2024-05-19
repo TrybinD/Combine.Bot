@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "combine-bot"
+version = "0.1.0"
+description = ""
+authors = ["Trubin <trybin420@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "data", from = "src" },
+            { include = "bot", from = "src" },
+            { include = "api", from = "src" },]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "^3.4.1"
+sqlalchemy = "^2.0.28"
+aiosqlite = "^0.20.0"
+fastapi = "^0.110.0"
+uvicorn = "^0.29.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
