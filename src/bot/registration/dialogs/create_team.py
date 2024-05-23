@@ -39,6 +39,7 @@ async def save_team(massage: Message, massage_input: MessageInput, manager: Dial
 
 
 team_name = Window(
+    Const("Введите название вашей команды"),
     MessageInput(check_existing_name),
     state=CreateTeamStates.team_name,
 )

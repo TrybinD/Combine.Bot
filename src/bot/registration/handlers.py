@@ -64,7 +64,6 @@ async def team_search_handler(message: Message, dialog_manager: DialogManager, s
 async def create_team_handler(message: Message, dialog_manager: DialogManager, state: FSMContext):
     data = await state.get_data()
     event_id = data["event_id"]
-    await message.answer("Введите название вашей команды", reply_markup=ReplyKeyboardRemove())
     await dialog_manager.start(CreateTeamStates.team_name, mode=StartMode.RESET_STACK, data = {"event_id": event_id})
 
 
