@@ -1,0 +1,4 @@
+from bot.registration.handlers import registration_router
+from .dialogs import registration_dialog_router
+
+registration_router.include_router(registration_dialog_router)

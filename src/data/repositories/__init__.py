@@ -1,3 +1,5 @@
 from data.repositories.event_repo import EventRepository
 from data.repositories.team_repo import TeamRepository
 from data.repositories.user_team_event_repo import UserTeamEventRepository
+from data.repositories.users_in_search_repo import UserInSearchRepository
+from data.repositories.user_repo import UserRepository

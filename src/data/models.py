@@ -6,7 +6,10 @@ class DBUser(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
+    nickname = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     info = Column(JSON, nullable=True)
+    chat_id = Column(Integer)
 
 
 class DBEvent(Base):
@@ -25,6 +28,7 @@ class DBTeam(Base):
     event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
     creator_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
 
 
 class DBUserTeamEvent(Base):
@@ -35,3 +39,12 @@ class DBUserTeamEvent(Base):
     team_id = Column(Integer, ForeignKey("team.id"), nullable=False)
     event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
     is_finished = Column(Boolean, default=False)
+
+
+class DBUserInSearch(Base):
+    __tablename__ = "user_in_search"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
+    description = Column(Text, nullable=False)

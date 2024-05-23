@@ -1,0 +1,4 @@
+from bot.my_events.handlers import my_events_router
+from .dialogs import my_events_dialog_router
+
+my_events_router.include_router(my_events_dialog_router)

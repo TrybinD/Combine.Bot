@@ -4,8 +4,7 @@ from aiogram.utils.formatting import Text, Bold, BotCommand
 class GreetingsText(Text):
     def __init__(self, name: str) -> None:
 
-        super().__init__("Привет, ", Bold(name), 
-                         "! ", 
+        super().__init__("Привет, ", Bold(name), "! ", 
                          "Я CombineBot, помогаю тебе с регистрацией на мероприятие и поиском команды ✨✨ \n\n",
                          "Сейчас ты находишься на домашней странице. Ты всегда можешь вернуться сюда, прописав команду ", 
                          BotCommand('/home'), "\n\n",

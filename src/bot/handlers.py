@@ -1,10 +1,9 @@
 from aiogram import Router, F
 from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter, CommandStart, CommandObject
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import StateFilter
 
-from bot.text import GreetingsText
+from bot.start.text import GreetingsText
 from bot.keyboards import HomeKeyboard, RegistrationKeyboard
 from bot.states import States
 from bot.services.registration_service import RegistrationService
@@ -12,6 +11,18 @@ from bot.services.events_service import EventService
 
 
 router = Router()
+
+@router.message(CommandStart(deep_link=True))
+async def start_deep_link(message: Message, command: CommandObject, state: FSMContext):
+    token = command.args
+
+    event_id = await RegistrationService().get_event_id(token)
+    if event_id is None:
+        await message.answer("Вам дали неверную ссылку, такого мероприятия нет или оно закончилось. Вы можете воспользоваться нашим ботом для регистрации на мероприятия. Для начала работы введите команду home")
+    else:
+        await state.update_data(event_id=event_id)
+        await message.answer("Привет! Я CombineBot и я помогаю регистрироваться на мероприятия. Ты регистрируешься на мероприятие ххх. Выберете опцию:", reply_markup=RegistrationKeyboard())
+        await state.set_state(States.register_on_events_stage_two)
 
 
 @router.message(Command("start"))

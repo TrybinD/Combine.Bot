@@ -13,6 +13,10 @@ class AbstractRepository(ABC):
     @abstractmethod
     async def find_by_options(self, **kwargs):
         raise NotImplementedError
+    
+    @abstractmethod
+    async def update(self, **kwargs):
+        raise NotImplementedError
 
 
 class SQLAlchemyRepository(AbstractRepository):
