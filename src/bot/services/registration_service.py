@@ -1,8 +1,9 @@
-from data.repositories import EventRepository, TeamRepository, UserTeamEventRepository, UserInSearchRepository
+from data.repositories import EventRepository, TeamRepository, UserTeamEventRepository, UserInSearchRepository, UserRepository
 
 
 class RegistrationService:
     event_repository: EventRepository = EventRepository()
+    user_repository: UserRepository = UserRepository()
     team_repository: TeamRepository = TeamRepository()
     user_team_event_repository: UserTeamEventRepository = UserTeamEventRepository()
     user_in_search_repository: UserInSearchRepository = UserInSearchRepository()
@@ -19,13 +20,14 @@ class RegistrationService:
             return None
         return team.id
     
-    async def register_on_event(self, user_id, event_id, team_id=None, team_name=None):
-        if team_name is not None:
-            team_id = await self.team_repository.add({"name": team_name, "event_id": event_id, "creator_id": user_id})
-        await self.user_team_event_repository.add(dict(user_id=user_id, event_id=event_id, team_id=team_id))
+    async def register_on_event(self, user_id, event_id, is_creator):
+
+        await self.user_team_event_repository.add(dict(user_id=user_id, event_id=event_id, is_team_creator=is_creator))
 
     async def get_event_name(self, event_id):
-        event_name = self.event_repository.find_by_options(id=event_id)
+        event = await self.event_repository.find_by_options(id=event_id, unique=True)
+
+        event_name = event.name
 
         return event_name
     
@@ -42,7 +44,9 @@ class RegistrationService:
     
     async def registr_search(self, user_id, event_id, description):
 
-        await self.user_in_search_repository.add({"user_id": user_id,
+        registration_id = await self.user_in_search_repository.add({"user_id": user_id,
                                                   "event_id": event_id, 
                                                   "description": description})
+        
+        return registration_id
 
