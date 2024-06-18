@@ -1,7 +1,7 @@
 from aiogram_dialog import Window, DialogManager, Dialog
-from aiogram_dialog.widgets.kbd import Button, SwitchTo
+from aiogram_dialog.widgets.kbd import SwitchTo
 from aiogram_dialog.widgets.text import Const
-from aiogram_dialog.widgets.input import TextInput, MessageInput
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram.types import Message
 
 from bot.registration.states import CreateTeamStates
@@ -23,29 +23,31 @@ async def check_existing_name(massage: Message, massage_input: MessageInput, man
         await manager.switch_to(CreateTeamStates.existing_team)
 
 
-async def save_team(massage: Message, massage_input: MessageInput, manager: DialogManager):
+async def save_team(message: Message, massage_input: MessageInput, manager: DialogManager):
     user_id = manager.event.from_user.id
     event_id = manager.start_data["event_id"]
     team_name = manager.dialog_data["team_name"]
-    team_description = massage.text
+    team_description = message.text
 
     team_id = await registration_service.create_team(team_name=team_name, team_description=team_description,
                                                      creator_id=user_id, event_id=event_id)
 
-    await registration_service.register_on_event(user_id=user_id, event_id=event_id, team_id=team_id)
+    await registration_service.register_on_event(user_id=user_id, event_id=event_id, is_creator=True)
 
     await manager.done()
+
+    await message.answer("Крутая идея! Мы обязательно поможем найти людей!")
     
 
 
 team_name = Window(
-    Const("Введите название вашей команды"),
+    Const("Введите название вашей команды или краткое описание идеи"),
     MessageInput(check_existing_name),
     state=CreateTeamStates.team_name,
 )
 
 team_description = Window(
-    Const("Опишите кого вы ищите, и чем планируете заниматься"),
+    Const("Опишите более подробно идею, кого вы ищите, и чем планируете заниматься"),
     MessageInput(save_team),
     SwitchTo(Const("Назад"), id="back", state=CreateTeamStates.team_name),
     state=CreateTeamStates.team_description,

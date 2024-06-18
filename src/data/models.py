@@ -36,9 +36,9 @@ class DBUserTeamEvent(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    team_id = Column(Integer, ForeignKey("team.id"), nullable=False)
     event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
-    is_finished = Column(Boolean, default=False)
+    is_team_creator = Column(Boolean, nullable=False)
+    is_active = Column(Boolean, default=True)
 
 
 class DBUserInSearch(Base):
@@ -48,3 +48,12 @@ class DBUserInSearch(Base):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     event_id = Column(Integer, ForeignKey("event.id"), nullable=False)
     description = Column(Text, nullable=False)
+
+
+class Recomendations(Base):
+    __tablename__ = "recomendations"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    registration_id = Column(Integer, ForeignKey("user_team_event.id"), nullable=False)
+    recommended_user_dicription_id = Column(Integer, ForeignKey("user_in_search.id"), nullable=True)
+    recommended_team_dicription_id = Column(Integer, ForeignKey("team.id"), nullable=True)

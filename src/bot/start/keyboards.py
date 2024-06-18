@@ -5,9 +5,8 @@ class HomeKeyboard(ReplyKeyboardMarkup):
     def __init__(self):
 
         keys = [
-            [KeyboardButton(text="Мои мероприятия", )],
-            [KeyboardButton(text="Регистрация на мероприятие")],
-            [KeyboardButton(text="Оставить фидбек")]
+            [KeyboardButton(text="Поиск команды")],
+            [KeyboardButton(text="Мои заявки")]
         ]
 
         super().__init__(keyboard=keys, input_field_placeholder="Домашняя страница:")

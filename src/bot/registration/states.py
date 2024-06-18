@@ -10,10 +10,6 @@ class CreateTeamStates(StatesGroup):
     existing_team = State()
 
 
-class JoinTeamStates(StatesGroup):
-    team_name = State()
-    not_existing_team = State()
-
 
 class SearchTeamStates(StatesGroup):
     about_me = State()
