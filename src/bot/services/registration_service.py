@@ -1,40 +1,37 @@
-from data.repositories import EventRepository, TeamRepository, UserTeamEventRepository, UserInSearchRepository, UserRepository
+from data.repositories import EventRepository, TeamRepository, UserInSearchRepository, UserRepository
 
 
 class RegistrationService:
     event_repository: EventRepository = EventRepository()
     user_repository: UserRepository = UserRepository()
     team_repository: TeamRepository = TeamRepository()
-    user_team_event_repository: UserTeamEventRepository = UserTeamEventRepository()
     user_in_search_repository: UserInSearchRepository = UserInSearchRepository()
 
     async def get_event_id(self, token):
-        event = await self.event_repository.find_by_options(unique=True, token=token)
-        if event is None:
+        events = await self.event_repository.get(token=token)
+        if not events:
             return None
-        return event.id
+        return events[0].id
     
     async def get_team_id(self, event_id, team_name):
-        team = await self.team_repository.find_by_options(unique=True, event_id=event_id, name=team_name)
-        if team is None:
+        teams = await self.team_repository.get(event_id=event_id, name=team_name)
+        if not teams:
             return None
-        return team.id
-    
-    async def register_on_event(self, user_id, event_id, is_creator):
-
-        await self.user_team_event_repository.add(dict(user_id=user_id, event_id=event_id, is_team_creator=is_creator))
+        return teams[0].id
 
     async def get_event_name(self, event_id):
-        event = await self.event_repository.find_by_options(id=event_id, unique=True)
+        event = await self.event_repository.get(id=event_id)[0]
 
         event_name = event.name
 
         return event_name
     
     async def check_existing_name(self, team_name):
-        team = await self.team_repository.find_by_options(name=team_name, unique=True)
+        teams = await self.team_repository.get(name=team_name)
 
-        return team is not None
+        if not teams:
+            return False
+        return True
     
     async def create_team(self, team_name, team_description, creator_id, event_id):
         team_id = await self.team_repository.add({"name": team_name, "description": team_description, 
@@ -42,11 +39,11 @@ class RegistrationService:
         
         return team_id
     
-    async def registr_search(self, user_id, event_id, description):
+    async def register_search(self, user_id, event_id, description):
 
         registration_id = await self.user_in_search_repository.add({"user_id": user_id,
-                                                  "event_id": event_id, 
-                                                  "description": description})
+                                                                    "event_id": event_id, 
+                                                                    "description": description})
         
         return registration_id
 

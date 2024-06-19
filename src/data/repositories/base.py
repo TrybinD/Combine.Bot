@@ -11,7 +11,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    async def find_by_options(self, **kwargs):
+    async def get(self, **kwargs):
         raise NotImplementedError
     
     @abstractmethod
@@ -29,14 +29,11 @@ class SQLAlchemyRepository(AbstractRepository):
             await session.commit()
             return res.scalar_one()
     
-    async def find_by_options(self, unique: bool = False, **kwargs):
+    async def get(self, **kwargs):
         async with async_session_maker() as session:
             stmt = select(self.model).filter_by(**kwargs)
             results = await session.execute(stmt)
-            if unique:
-                results = results.scalar_one_or_none()
-            else:
-                results = results.scalars().all()
+            results = results.scalars().all()
             return results
         
     async def update(self, data: dict, **kwargs):

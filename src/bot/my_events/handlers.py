@@ -18,7 +18,7 @@ async def my_events_handler(message: Message, dialog_manager: DialogManager):
     events = await events_service.get_user_events(message.from_user.id)
 
     if events:
-        await dialog_manager.start(MyEventsStates.my_events_state, data=events, mode=StartMode.RESET_STACK)
+        await dialog_manager.start(MyEventsStates.my_events_state, mode=StartMode.RESET_STACK)
     else:
         await message.answer("Ты пока не оставлял заявки. Ищи команду скорее!")
     

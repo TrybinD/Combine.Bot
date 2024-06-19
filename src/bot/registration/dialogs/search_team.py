@@ -1,10 +1,11 @@
 from aiogram_dialog import Window, DialogManager, Dialog
-from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const
 from aiogram_dialog.widgets.input import MessageInput
+import requests
 
 from bot.registration.states import SearchTeamStates
 from bot.services.registration_service import RegistrationService
+import config
 
 registration_service = RegistrationService()
 
@@ -14,13 +15,14 @@ async def send_application(message, message_input, manager: DialogManager):
     user_id = manager.event.from_user.id
     event_id = manager.start_data["event_id"]
 
-    await registration_service.register_on_event(user_id=user_id, event_id=event_id, is_creator=False)
-
-    registration_id = await registration_service.registr_search(user_id=user_id, event_id=event_id, description=description)
+    registration_id = await registration_service.register_search(user_id=user_id, event_id=event_id, description=description)
 
     await manager.done()
 
     await message.answer("Ты классный! Мы поможем тебе найти команду!")
+
+
+    requests.post(config.COMBINATOR_URL + "/recommendations-to-user/", data={"user_in_search_id": registration_id})
     
 
 about_me = Window(

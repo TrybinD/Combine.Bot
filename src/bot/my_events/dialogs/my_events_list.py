@@ -1,17 +1,19 @@
 import operator
 from aiogram_dialog import Window, DialogManager, Dialog
-from aiogram_dialog.widgets.kbd import Button, ScrollingGroup, Select, Group, Cancel, Row
+from aiogram_dialog.widgets.kbd import Button, ScrollingGroup, Select, Cancel, Row
 from aiogram_dialog.widgets.text import Const, Format, Jinja
-from aiogram_dialog.widgets.input import MessageInput
 from aiogram.types import CallbackQuery
 
 from bot.my_events.states import MyEventsStates, MyRecosStates
+from bot.services.events_service import EventService
+
+events_service = EventService()
 
 async def data_getter(dialog_manager: DialogManager, **middleware_data):
-    events = dialog_manager.start_data
+    events = events = await events_service.get_user_events(dialog_manager.event.from_user.id)
 
-    return {"events": [(event["name"], str(event["registaration_id"]) + "_" + str(event["is_creator"]), # TODO Костыль для демо
-                        'Ищу людей в команду' if event["is_creator"] else 'Ищу команду') for event in events][:2]}
+    return {"events": [(event["name"], str(event["id"])+ "_" + str(event["is_creator"]),
+                        'Ищу людей в команду' if event["is_creator"] else 'Ищу команду') for event in events]}
 
 async def start_data_getter(dialog_manager: DialogManager, **middleware_data):
     return dialog_manager.start_data
@@ -19,31 +21,38 @@ async def start_data_getter(dialog_manager: DialogManager, **middleware_data):
 
 async def button_handler(message: CallbackQuery, button: Button, manager: DialogManager, item_id):
 
-    registration_id, is_creator = item_id.split("_")
+    event_id, is_creator = item_id.split("_")
     is_creator = (is_creator == "True")
 
 
     # TODO Получть рекомендации
 
-    if not is_creator:
+    if is_creator:
         recos = [{"team_name": "Крутые Бобры", 
                   "discription": "Мы пипец какие крутые бобры, ищем Пенька", 
                   "contact": "@" + "angrybeavers"}]
         
         await manager.start(MyRecosStates.my_team_recos_state, data={"recos": recos, 
-                                                                     "registration_id": registration_id})
+                                                                     "event_id": event_id, 
+                                                                     "is_creator": is_creator})
 
     else:
         recos = [{"name": "Биба", "discription": "Я Биба", "contact": "@" + "biba"}, 
                  {"name": "Боба", "discription": "Я Боба", "contact": "@" + "boba"}]
 
         await manager.start(MyRecosStates.my_user_recos_state, data={"recos": recos, 
-                                                                     "registration_id": registration_id})
+                                                                     "event_id": event_id, 
+                                                                     "is_creator": is_creator})
         
 
 async def del_application_hendler(message: CallbackQuery, button: Button, manager: DialogManager):
 
     await message.answer("Хорошо, что вы нашли команду")
+    user_id = manager.event.from_user.id
+    event_id = manager.start_data["event_id"]
+    is_creator = manager.start_data["is_creator"]
+
+    await events_service.close_application(user_id=user_id, event_id=event_id, is_creator=is_creator)
 
     await manager.done()
 

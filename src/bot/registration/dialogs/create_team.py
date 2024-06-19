@@ -1,3 +1,5 @@
+import requests
+
 from aiogram_dialog import Window, DialogManager, Dialog
 from aiogram_dialog.widgets.kbd import SwitchTo
 from aiogram_dialog.widgets.text import Const
@@ -6,6 +8,7 @@ from aiogram.types import Message
 
 from bot.registration.states import CreateTeamStates
 from bot.services.registration_service import RegistrationService
+import config
 
 registration_service = RegistrationService()
 
@@ -32,11 +35,11 @@ async def save_team(message: Message, massage_input: MessageInput, manager: Dial
     team_id = await registration_service.create_team(team_name=team_name, team_description=team_description,
                                                      creator_id=user_id, event_id=event_id)
 
-    await registration_service.register_on_event(user_id=user_id, event_id=event_id, is_creator=True)
-
     await manager.done()
 
     await message.answer("Крутая идея! Мы обязательно поможем найти людей!")
+
+    requests.post(config.COMBINATOR_URL + "/recommendations-to-team/", data={"team_id": team_id})
     
 
 
