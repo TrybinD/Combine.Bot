@@ -5,7 +5,7 @@ from sqlalchemy.orm import DeclarativeBase
 import config
 
 engine = create_async_engine(config.ASYNC_CONNECTION_STRING)
-sync_engine = create_engine(config.ASYNC_CONNECTION_STRING)
+sync_engine = create_engine(config.SYNC_CONNECTION_STRING)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
