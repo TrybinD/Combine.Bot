@@ -39,7 +39,7 @@ async def save_team(message: Message, massage_input: MessageInput, manager: Dial
 
     await message.answer("Крутая идея! Мы обязательно поможем найти людей!")
 
-    requests.post(config.COMBINATOR_URL + f"/recommendations-to-team/&team_id={team_id}")
+    requests.post(config.COMBINATOR_URL + f"/recommendations-to-team/?team_id={team_id}")
     
 
 
