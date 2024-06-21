@@ -1,0 +1,78 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:13
+    environment:
+      POSTGRES_USER: combine
+      POSTGRES_PASSWORD: combine
+      POSTGRES_DB: combine
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "combine"]
+      interval: 10s
+      retries: 5
+      start_period: 2s
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+    - combine-network
+
+  init:
+    container_name: init
+    image: combine-bot
+    command: create_db.py
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+    - combine-network
+    environment:
+      - SYNC_CONNECTION_STRING=postgresql+psycopg2://combine:combine@postgres:5432/combine
+      - ASYNC_CONNECTION_STRING=postgresql+asyncpg://combine:combine@postgres:5432/combine
+
+  api:
+    container_name: api
+    image: combine-bot
+    command: main_api.py
+    ports:
+      - "8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+    - combine-network
+    environment:
+      - SYNC_CONNECTION_STRING=postgresql+psycopg2://combine:combine@postgres:5432/combine
+      - ASYNC_CONNECTION_STRING=postgresql+asyncpg://combine:combine@postgres:5432/combine
+
+  bot:
+    container_name: bot
+    image: combine-bot
+    command: bot_main.py
+    restart: always
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+    - combine-network
+    environment:
+      - SYNC_CONNECTION_STRING=postgresql+psycopg2://combine:combine@postgres:5432/combine
+      - ASYNC_CONNECTION_STRING=postgresql+asyncpg://combine:combine@postgres:5432/combine
+      - COMBINATOR_URL=http://combinator:7000
+  combinator:
+    container_name: combinator
+    image: combine-combinator
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+    - combine-network
+    environment:
+      - SYNC_CONNECTION_STRING=postgresql+psycopg2://combine:combine@postgres:5432/combine
+      - BOT_URL=http://api:8000
+
+networks:
+  combine-network:
+   driver: bridge

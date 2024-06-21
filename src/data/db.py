@@ -17,5 +17,7 @@ async def get_async_session():
         yield 
         
 def create_db():
+    print(config.ASYNC_CONNECTION_STRING)
+    print(config.SYNC_CONNECTION_STRING)
     Base.metadata.drop_all(sync_engine)
     Base.metadata.create_all(sync_engine)

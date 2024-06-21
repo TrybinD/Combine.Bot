@@ -22,7 +22,7 @@ async def send_application(message, message_input, manager: DialogManager):
     await message.answer("Ты классный! Мы поможем тебе найти команду!")
 
 
-    requests.post(config.COMBINATOR_URL + "/recommendations-to-user/", data={"user_in_search_id": registration_id})
+    requests.post(config.COMBINATOR_URL + f"/recommendations-to-user/?user_in_search_id={registration_id}")
     
 
 about_me = Window(

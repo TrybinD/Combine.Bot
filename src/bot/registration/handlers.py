@@ -48,7 +48,8 @@ async def start_deep_link_handler(message: Message, command: CommandObject, stat
                 F.text == "Поиск команды")
 async def register_on_events_handler(message: Message, state: FSMContext):
 
-    await message.answer("Чтобы мы поняли, для какого мероприятия ты ищешь команду, введи токен мероприятия", 
+    await message.answer("Чтобы мы поняли, для какого мероприятия ты ищешь команду, введи токен мероприятия. "
+                         "Если просто ищешь единомышлеников для крутого проекта напиши 'free'", 
                          reply_markup=ReplyKeyboardRemove())
     await state.set_state(RegistrationStates.enter_event_token)
 

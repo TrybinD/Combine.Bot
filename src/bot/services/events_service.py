@@ -10,8 +10,11 @@ class EventService:
 
         res = []
 
-        res += [{"id": event.id, "name": event.name, "is_creator": True} for event, _ in user_events_as_teamlead]
-        res += [{"id": event.id, "name": event.name, "is_creator": False} for event, _ in user_events_as_member]
+        res += [{"id": event.id, "name": event.name, "is_creator": True, "registration_id": team.id} for event, team in user_events_as_teamlead]
+        res += [{"id": event.id,
+                  "name": event.name, 
+                 "is_creator": False, 
+                 "registration_id": user_in_serarch.id} for event, user_in_serarch in user_events_as_member]
 
         return res
     
@@ -20,4 +23,4 @@ class EventService:
         if is_creator:
             await self.team_repository.update(data={"is_active": False}, creator_id=user_id, event_id=event_id)
         else:
-            await self.team_repository.update(data={"is_active": False}, user_id=user_id, event_id=event_id)
+            await self.user_in_search_repository.update(data={"is_active": False}, user_id=user_id, event_id=event_id)
