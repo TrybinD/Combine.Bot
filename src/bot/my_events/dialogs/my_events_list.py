@@ -28,10 +28,10 @@ async def button_handler(message: CallbackQuery, button: Button, manager: Dialog
 
     if is_creator:
 
-        # recos = await recommendation_service.get_recomendations_to_team(team_id=int(registration_id))
+        recos = await recommendation_service.get_recomendations_to_team(team_id=int(registration_id))
         
-        recos = [{"name": "Биба", "discription": "Я Биба, супер крутой девпопс и бекендер", "contact": "@" + "biba"}, 
-                 {"name": "Боба", "discription": "Я Боба, топ ресерчер и MLE-инжир", "contact": "@" + "boba"}]
+        # recos = [{"name": "Биба", "discription": "Я Биба, супер крутой девпопс и бекендер", "contact": "@" + "biba"}, 
+        #          {"name": "Боба", "discription": "Я Боба, топ ресерчер и MLE-инжир", "contact": "@" + "boba"}]
         
         await manager.start(MyRecosStates.my_user_recos_state, data={"recos": recos, 
                                                                      "event_id": event_id, 
@@ -39,11 +39,11 @@ async def button_handler(message: CallbackQuery, button: Button, manager: Dialog
 
     else:
 
-        # recos = await recommendation_service.get_recomendations_to_user(user_in_search_id=int(registration_id))
+        recos = await recommendation_service.get_recomendations_to_user(user_in_search_id=int(registration_id))
 
-        recos = [{"team_name": "Крутые Бобры", 
-                  "discription": "Мы пипец какие крутые бобры, ищем Пенька", 
-                  "contact": "@" + "angrybeavers"}]
+        # recos = [{"team_name": "Крутые Бобры", 
+        #           "discription": "Мы пипец какие крутые бобры, ищем Пенька", 
+        #           "contact": "@" + "angrybeavers"}]
 
         await manager.start(MyRecosStates.my_team_recos_state, data={"recos": recos, 
                                                                      "event_id": event_id, 
